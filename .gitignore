@@ -1,0 +1,23 @@
+# Aplicações com repositório git próprio — não versionar aqui na raiz
+absist/
+vetoros/
+vetorpet/
+
+# Arquivos de ambiente e segredos
+.env
+.env.*
+!.env.example
+
+# Dados do n8n (workflows/credenciais ficam no volume Docker, não no git)
+n8n/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Docker
+*.log

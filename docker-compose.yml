@@ -1,0 +1,79 @@
+services:
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: absist
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks: [ecossistema]
+
+  redis:
+    image: redis:7
+    networks: [ecossistema]
+
+  absist:
+    build: ./absist
+    volumes:
+      - ./absist:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_DATABASE=absist
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+    ports:
+      - "8001:8000"
+    depends_on: [mysql]
+    networks: [ecossistema]
+
+  vetoros:
+    build: ./vetoros
+    volumes:
+      - ./vetoros:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_DATABASE=vetoros
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+    ports:
+      - "8002:8000"
+    depends_on: [mysql]
+    networks: [ecossistema]
+
+  vetorpet:
+    build: ./vetorpet
+    volumes:
+      - ./vetorpet:/var/www/html
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_DATABASE=vetorpet
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+    ports:
+      - "8003:8000"
+    depends_on: [mysql]
+    networks: [ecossistema]
+
+  n8n:
+    image: n8nio/n8n
+    environment:
+      - N8N_ENCRYPTION_KEY=troque_esta_chave_por_uma_aleatoria
+    volumes:
+      - n8n_data:/home/node/.n8n
+    ports:
+      - "5678:5678"
+    networks: [ecossistema]
+
+networks:
+  ecossistema:
+    driver: bridge
+
+volumes:
+  mysql_data:
+  n8n_data:
