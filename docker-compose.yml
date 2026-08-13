@@ -65,6 +65,21 @@ services:
     depends_on: [vetoros]
     networks: [ecossistema]
 
+  vetoros-queue:
+    build: ./vetoros
+    command: php artisan queue:work --tries=3 --sleep=3
+    volumes:
+      - ./vetoros:/var/www/html
+      - vetoros_vendor:/var/www/html/vendor
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_DATABASE=vetoros
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+    depends_on: [mysql, vetoros]
+    networks: [ecossistema]
+
   vetorpet:
     build: ./vetorpet
     volumes:
@@ -94,8 +109,14 @@ services:
     image: n8nio/n8n
     environment:
       - N8N_ENCRYPTION_KEY=troque_esta_chave_por_uma_aleatoria
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - NODE_FUNCTION_ALLOW_BUILTIN=crypto
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - N8N_WEBHOOK_SECRET=${N8N_WEBHOOK_SECRET}
+      - VETOROS_N8N_TOKEN=${VETOROS_N8N_TOKEN}
     volumes:
       - n8n_data:/home/node/.n8n
+      - ./manuals:/home/node/.n8n-files/manuals:ro
     ports:
       - "5678:5678"
     networks: [ecossistema]
