@@ -19,45 +19,75 @@ services:
     build: ./absist
     volumes:
       - ./absist:/var/www/html
+      - absist_vendor:/var/www/html/vendor
     environment:
       - DB_CONNECTION=mysql
       - DB_HOST=mysql
       - DB_DATABASE=absist
       - DB_USERNAME=root
       - DB_PASSWORD=root
-    ports:
-      - "8001:8000"
+    expose: ["9000"]
     depends_on: [mysql]
+    networks: [ecossistema]
+
+  absist-nginx:
+    image: nginx:alpine
+    volumes:
+      - ./absist:/var/www/html:ro
+      - ./nginx/absist.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8001:80"
+    depends_on: [absist]
     networks: [ecossistema]
 
   vetoros:
     build: ./vetoros
     volumes:
       - ./vetoros:/var/www/html
+      - vetoros_vendor:/var/www/html/vendor
     environment:
       - DB_CONNECTION=mysql
       - DB_HOST=mysql
       - DB_DATABASE=vetoros
       - DB_USERNAME=root
       - DB_PASSWORD=root
-    ports:
-      - "8002:8000"
+    expose: ["9000"]
     depends_on: [mysql]
+    networks: [ecossistema]
+
+  vetoros-nginx:
+    image: nginx:alpine
+    volumes:
+      - ./vetoros:/var/www/html:ro
+      - ./nginx/vetoros.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8002:80"
+    depends_on: [vetoros]
     networks: [ecossistema]
 
   vetorpet:
     build: ./vetorpet
     volumes:
       - ./vetorpet:/var/www/html
+      - vetorpet_vendor:/var/www/html/vendor
     environment:
       - DB_CONNECTION=mysql
       - DB_HOST=mysql
       - DB_DATABASE=vetorpet
       - DB_USERNAME=root
       - DB_PASSWORD=root
-    ports:
-      - "8003:8000"
+    expose: ["9000"]
     depends_on: [mysql]
+    networks: [ecossistema]
+
+  vetorpet-nginx:
+    image: nginx:alpine
+    volumes:
+      - ./vetorpet:/var/www/html:ro
+      - ./nginx/vetorpet.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "8003:80"
+    depends_on: [vetorpet]
     networks: [ecossistema]
 
   n8n:
@@ -77,3 +107,6 @@ networks:
 volumes:
   mysql_data:
   n8n_data:
+  absist_vendor:
+  vetoros_vendor:
+  vetorpet_vendor:
